@@ -15,13 +15,13 @@ def add_recurring_item():
     return '', 204
 
 @app.route("/api/remove_recurring_item", methods=['DELETE'])
-def add_recurring_item():
+def remove_recurring_item():
     item = request.get_json()
     recurring_list = [s for s in recurring_list if s != item]
     return '', 204
 
 @app.route("/api/get_recurring_list", methods=['GET'])
-def add_recurring_item():
+def get_recurring_list():
     return recurring_list
 
 
