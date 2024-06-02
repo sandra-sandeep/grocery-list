@@ -41,6 +41,7 @@ function AddRecurringFieldForm() {
 }
 
 function GroceryList({ items }) {
+  // TODO(sandra-sandeep): add remove functionality
   return (
     <FormGroup>
       {items.map((item, i) => (
@@ -64,10 +65,12 @@ function App() {
   }, []);
 
   return (
+    // TODO(sandra-sandeep): add weekly (non-recurring) grocery list too.
     <div>
       {typeof recurringList === "undefined" ? (
         <p>Loading...</p>
       ) : (
+        // TODO(sandra-sandeep): Make it cute.
         <div className="Container">
           <GroceryList items={recurringList} />
           <AddRecurringFieldForm />
