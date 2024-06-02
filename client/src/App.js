@@ -2,10 +2,16 @@ import React, { useState, useEffect, useCallback } from "react";
 // import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
-import { FormControl, FormLabel } from "@mui/material";
+import { FormLabel } from "@mui/material";
+import FormGroup from "@mui/material/FormGroup";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Checkbox from "@mui/material/Checkbox";
+import './App.css';
+// import Stack from "@mui/material/Stack";
 
-function BasicTextFields() {
+function AddRecurringFieldForm() {
   const [item, setItem] = useState("");
+
   const saveNewItem = useCallback(() => {
     const requestOptions = {
       method: "POST",
@@ -14,46 +20,58 @@ function BasicTextFields() {
     };
 
     fetch("/api/add_recurring_item", requestOptions);
-    // .then((response) => response.json())
-    // .then((data) => setPostId(data.id));
   }, [item]);
 
   return (
-    <FormControl onSubmit={saveNewItem}>
-      <FormLabel>Enter Grocery Item</FormLabel>
+    <form onSubmit={saveNewItem}>
+      <div>
+        <FormLabel>Enter Grocery Item</FormLabel>
+      </div>
       <TextField
         label="item"
         onChange={(e) => setItem(e.target.value)}
         variant="outlined"
         value={item}
       ></TextField>
-      <Button type="submit">Submit</Button>
-    </FormControl>
+      <div>
+        <Button type="submit">Submit</Button>
+      </div>
+    </form>
   );
 }
+
+function GroceryList({ items }) {
+  return (
+    <FormGroup>
+      {items.map((item, i) => (
+        <FormControlLabel control={<Checkbox />} label={item} key={i} />
+      ))}
+    </FormGroup>
+  );
+}
+
 function App() {
-  const [recurringList, setRecurringList] = useState([{}]);
+  const [recurringList, setRecurringList] = useState([]);
 
   useEffect(() => {
     fetch("/api/get_recurring_list")
       .then((result) => result.json())
       .then((result) => {
-        setRecurringList(result);
         console.log(result);
+
+        setRecurringList(result);
       });
   }, []);
 
   return (
     <div>
-      {typeof recurringList.items === "undefined" ? (
+      {typeof recurringList === "undefined" ? (
         <p>Loading...</p>
       ) : (
-        <div>
-          {/* (recurringList.items.map((item, i) => <p key={i}>{item}</p>)) */}
-          <h1>Add To List:</h1>
-          <BasicTextFields />
+        <div className="Container">
+          <GroceryList items={recurringList} />
+          <AddRecurringFieldForm />
         </div>
-        // data.members.map((member, i) => <p key={i}>{member}</p>)
       )}
     </div>
   );
