@@ -1,51 +1,67 @@
 import React, { useState, useEffect, useCallback } from "react";
-// import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
-import Button from "@mui/material/Button";
-import { FormLabel } from "@mui/material";
 import FormGroup from "@mui/material/FormGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
-import './App.css';
-// import Stack from "@mui/material/Stack";
+import "./App.css";
 
-function AddRecurringFieldForm() {
+function NewItem({ setNeedsUpdate }) {
   const [item, setItem] = useState("");
 
-  const saveNewItem = useCallback(() => {
+  const saveNewItem = useCallback(async (item) => {
     const requestOptions = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ item }),
     };
-
-    fetch("/api/add_recurring_item", requestOptions);
-  }, [item]);
+    await fetch("/api/add_recurring_item", requestOptions);
+    setNeedsUpdate(true);
+    setItem("")
+  }, [setNeedsUpdate, setItem]);
 
   return (
-    <form onSubmit={saveNewItem}>
-      <div>
-        <FormLabel>Enter Grocery Item</FormLabel>
-      </div>
+    <span className="NewItem">
       <TextField
         label="item"
         onChange={(e) => setItem(e.target.value)}
-        variant="outlined"
+        variant="standard"
         value={item}
-      ></TextField>
-      <div>
-        <Button type="submit">Submit</Button>
-      </div>
-    </form>
+        inputProps={{
+          onKeyPress: async (event) => {
+            if (event.key === "Enter") {
+              event.preventDefault();
+              console.log("sundra1", item);
+              await saveNewItem(item);
+            }
+          },
+        }}
+      />
+    </span>
   );
 }
 
-function GroceryList({ items }) {
-  // TODO(sandra-sandeep): add remove functionality
+function ExistingItemList({ items, setNeedsUpdate }) {
+  const handleCheck = useCallback(async (event, item) => {
+    if (event.target.checked) {
+      console.log("sundra", item);
+      const requestOptions = {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ item }),
+      };
+      await fetch("/api/remove_recurring_item", requestOptions);
+      setNeedsUpdate(true);
+    }
+  }, [setNeedsUpdate]);
+
   return (
     <FormGroup>
       {items.map((item, i) => (
-        <FormControlLabel control={<Checkbox />} label={item} key={i} />
+        <FormControlLabel
+          control={<Checkbox onChange={async (e) => await handleCheck(e, item)} />}
+          label={item}
+          key={i}
+        />
       ))}
     </FormGroup>
   );
@@ -53,16 +69,18 @@ function GroceryList({ items }) {
 
 function App() {
   const [recurringList, setRecurringList] = useState([]);
+  const [needsUpdate, setNeedsUpdate] = useState(true);
 
   useEffect(() => {
-    fetch("/api/get_recurring_list")
+    if (needsUpdate) {
+      fetch("/api/get_recurring_list")
       .then((result) => result.json())
       .then((result) => {
-        console.log(result);
-
         setRecurringList(result);
       });
-  }, []);
+      setNeedsUpdate(false);
+    }
+  }, [needsUpdate, setNeedsUpdate]);
 
   return (
     // TODO(sandra-sandeep): add weekly (non-recurring) grocery list too.
@@ -71,9 +89,9 @@ function App() {
         <p>Loading...</p>
       ) : (
         // TODO(sandra-sandeep): Make it cute.
-        <div className="Container">
-          <GroceryList items={recurringList} />
-          <AddRecurringFieldForm />
+        <div>
+          <ExistingItemList items={recurringList} setNeedsUpdate={setNeedsUpdate} />
+          <NewItem setNeedsUpdate={setNeedsUpdate} />
         </div>
       )}
     </div>

@@ -16,6 +16,7 @@ def add_recurring_item():
 
 @app.route("/api/remove_recurring_item", methods=['DELETE'])
 def remove_recurring_item():
+    global recurring_list
     item = request.get_json()["item"]
     recurring_list = [s for s in recurring_list if s != item]
     return '', 204
