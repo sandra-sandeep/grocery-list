@@ -58,6 +58,7 @@ function ExistingItemList({ items, setNeedsUpdate }) {
     <FormGroup>
       {items.map((item, i) => (
         <FormControlLabel
+          // TODO (sandrasandeep): prevent onChange when label, not checkbox, is clicked
           control={<Checkbox onChange={async (e) => await handleCheck(e, item)} />}
           label={item}
           key={i}
