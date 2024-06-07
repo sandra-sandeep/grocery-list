@@ -37,6 +37,6 @@
   }
 }
 
-.NewItem {
-  padding-left: 32px;
+.ExistingItem {
+  display: flex;
 }
