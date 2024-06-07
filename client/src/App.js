@@ -74,7 +74,7 @@ function ExistingItemList({ items, setNeedsUpdate }) {
   return (
     <FormGroup>
       {items.map((item, i) => (
-        <ExistingItem key={i} item={item} setNeedsUpdate={setNeedsUpdate} />
+        <ExistingItem key={item} item={item} setNeedsUpdate={setNeedsUpdate} />
       ))}
     </FormGroup>
   );
