@@ -46,7 +46,6 @@ function ExistingItem({ item, setNeedsUpdate }) {
   const handleCheck = useCallback(
     async (event) => {
       if (event.target.checked && event.target === event.currentTarget) {
-        console.log(event);
         const requestOptions = {
           method: "DELETE",
           headers: { "Content-Type": "application/json" },
